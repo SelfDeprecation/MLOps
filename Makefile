@@ -1,4 +1,4 @@
-.PHONY: install generate bench check clean
+.PHONY: install generate bench inspect check clean
 
 install:
 	uv sync
@@ -9,8 +9,11 @@ generate:
 bench:
 	uv run python -m src.bench
 
+inspect:
+	uv run python -m src.inspect_model
+
 check:
 	bash tests/check.sh
 
 clean:
-	rm -rf docs/bench.json out1.txt out2.txt params.yaml.bak
+	rm -rf docs/bench.json docs/report.json out1.txt out2.txt params.yaml.bak src/__pycache__ tests/__pycache__

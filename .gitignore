@@ -1,8 +1,10 @@
 __pycache__/
 .venv/
 docs/bench.json
+docs/report.json
 out1.txt
 out2.txt
 params.yaml.bak
 params.yaml.orig
 .DS_Store
+.tmp_hw2_attachment/
