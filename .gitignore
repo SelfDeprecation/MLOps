@@ -8,3 +8,6 @@ params.yaml.bak
 params.yaml.orig
 .DS_Store
 .tmp_hw2_attachment/
+data/
+dvc_remote/
+.tmp_*.py

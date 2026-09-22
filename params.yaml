@@ -41,3 +41,62 @@ lora:
 report:
   json: "docs/report.json"
   markdown: "docs/anatomy.md"
+
+# ДЗ 3: авторский датасет диагностических вопросов по MLOps.
+collect:
+  version: "v2"              # v1 | v2
+  examples_per_topic: 24
+  sources:
+    v1:
+      groups: 50
+    v2:
+      groups: 70
+  system_prompts:
+    - "Ты — инженер MLOps. Дай практичный и проверяемый ответ на диагностический вопрос."
+    - "Помоги разобрать эксплуатационный сбой ML-системы: назови проверку и безопасное действие."
+    - "Отвечай как ревьюер ML-платформы: кратко объясни причину, сигнал и следующий шаг."
+    - "Ты консультируешь команду по надёжности ML. Не выдумывай метрики и отделяй наблюдение от вывода."
+
+clean:
+  min_user_chars: 30
+  max_user_chars: 4000
+  min_assistant_chars: 2
+  near_dup:
+    enabled: true
+    shingle_words: 4
+    num_perm: 64
+    threshold: 0.85
+  pii:
+    enabled: true
+
+diversity:
+  min_examples: 1000
+  min_system_prompts: 3
+  min_groups: 50
+  max_group_share: 0.10
+  min_answer_len_ratio: 1.6
+  max_same_length_share: 0.25
+  max_duplicate_answer_share: 0.30
+
+split:
+  group_key: "topic"
+  ratios:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  seed: 42
+
+contamination:
+  threshold: 0.85
+
+paths:
+  raw: "data/raw.jsonl"
+  clean: "data/clean.jsonl"
+  train: "data/train.jsonl"
+  val: "data/val.jsonl"
+  test: "data/test.jsonl"
+  metrics_collect: "metrics/collect.json"
+  metrics_clean: "metrics/clean.json"
+  metrics_split: "metrics/split.json"
+  metrics_diversity: "metrics/diversity.json"
+  datasheet: "docs/datasheet.md"

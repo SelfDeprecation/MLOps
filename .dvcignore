@@ -1,0 +1,2 @@
+# Add patterns of files dvc should ignore, which could improve
+# the performance. See https://dvc.org/doc/user-guide/dvcignore

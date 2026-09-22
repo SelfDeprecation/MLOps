@@ -1,0 +1,12 @@
+{
+  "version": "v2",
+  "source": "author_catalog",
+  "catalog_topics_available": 70,
+  "topics_selected": 70,
+  "examples_per_topic": 24,
+  "base_rows": 1680,
+  "quality_cases_added": 3,
+  "rows_written": 1683,
+  "system_prompt_variants": 4,
+  "seconds": 0.07
+}
