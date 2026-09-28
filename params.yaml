@@ -2,6 +2,7 @@ model:
   name: "Qwen/Qwen3-0.6B"
   dtype: "float32"          # CPU i5-8250U не имеет аппаратного ускорения BF16
   device: "auto"            # auto | cpu | cuda | mps
+  enable_thinking: false    # единый chat template для обучения и инференса
 
 generate:
   max_new_tokens: 200
@@ -100,3 +101,31 @@ paths:
   metrics_split: "metrics/split.json"
   metrics_diversity: "metrics/diversity.json"
   datasheet: "docs/datasheet.md"
+
+# ДЗ 4: токенизация выходов split из ДЗ 3.
+data:
+  source_train: "../../datasets/nmo/sft_single/train/0000.parquet"
+  source_val: "../../datasets/nmo/sft_single/validation/0000.parquet"
+  train_jsonl: "data/train.jsonl"
+  val_jsonl: "data/val.jsonl"
+  out_dir: "data/tokenized"
+
+sample:
+  train_size: 500
+  val_size: 100
+  scan_rows: 20000
+  seed: 42
+
+tokenize:
+  max_seq_len: 384
+  truncated_warn_ratio: 0.05
+  padding_side: "left"
+
+packing:
+  enabled: true
+  batch_size: 8
+
+train_estimate:
+  epochs: 3
+  # Медиана генерации из ДЗ 1 на текущем CPU. Для обучения это оптимистичная граница.
+  tokens_per_sec: 4.88

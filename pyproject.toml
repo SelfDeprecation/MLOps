@@ -1,7 +1,7 @@
 [project]
 name = "mlops-homeworks"
 version = "0.1.0"
-description = "MLOPS-26: окружение, анатомия модели и версионирование датасета"
+description = "MLOPS-26: окружение, данные и препроцессинг для обучения"
 requires-python = ">=3.12"
 dependencies = [
     "torch==2.8.0",
@@ -15,4 +15,5 @@ dependencies = [
     "dvc>=3.55",
     "pydantic>=2.9",
     "datasketch>=1.6",
+    "pyarrow>=18.0",
 ]
