@@ -28,8 +28,12 @@ memory:
   repeats: 1
 
 lora:
+  r: 8
+  alpha: 16
   alpha_ratio: 2
-  dropout: 0.0
+  dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj",
+                   "gate_proj", "up_proj", "down_proj"]
   configs:
     - name: "r=8, q_proj+v_proj"
       r: 8
@@ -101,6 +105,10 @@ paths:
   metrics_split: "metrics/split.json"
   metrics_diversity: "metrics/diversity.json"
   datasheet: "docs/datasheet.md"
+  models: "models"
+  metrics: "metrics"
+  curves: "docs/curves.png"
+  compare: "docs/compare.md"
 
 # ДЗ 4: токенизация выходов split из ДЗ 3.
 data:
@@ -109,6 +117,8 @@ data:
   train_jsonl: "data/train.jsonl"
   val_jsonl: "data/val.jsonl"
   out_dir: "data/tokenized"
+  train: "data/tokenized/train.pt"
+  val: "data/tokenized/val.pt"
 
 sample:
   train_size: 500
@@ -129,3 +139,36 @@ train_estimate:
   epochs: 3
   # Медиана генерации из ДЗ 1 на текущем CPU. Для обучения это оптимистичная граница.
   tokens_per_sec: 4.88
+
+# ДЗ 5: два воспроизводимых LoRA-эксперимента на выходе tokenize.
+train:
+  seed: 42
+  epochs: 1
+  batch_size: 2
+  grad_accum: 4
+  lr: 2.0e-4
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  eval_every: 5
+  eval_batch_size: 2
+  val_limit: 16
+  gradient_checkpointing: true
+  # На CPU эпоха заняла бы часы; ограниченный опыт следует рекомендации лекции.
+  max_steps: 10
+
+variants:
+  - name: "all_layers"
+    freeze_first: 0
+  - name: "freeze14"
+    freeze_first: 14
+
+compare:
+  max_new_tokens: 40
+  prompts:
+    - "Команда наблюдает: поля исчезают или меняют тип без ошибки. Как понятие «Валидация схемы» помогает проверить гипотезу и что сделать первым?"
+    - "Команда наблюдает: тестовая метрика неожиданно завышена. Как понятие «Контаминация сплита» помогает проверить гипотезу и что сделать первым?"
+    - "Команда наблюдает: job не укладывается в окно. Как понятие «Batch inference» помогает проверить гипотезу и что сделать первым?"
+    - "Команда наблюдает: изменение upstream ломает обучение. Как понятие «Data contract» помогает проверить гипотезу и что сделать первым?"
+    - "Команда наблюдает: для отключения функции нужен новый релиз. Как понятие «Feature flag» помогает проверить гипотезу и что сделать первым?"
+  system: "Отвечай как ревьюер ML-платформы: кратко объясни причину, наблюдаемый сигнал и безопасный следующий шаг."

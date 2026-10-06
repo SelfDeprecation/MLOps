@@ -281,3 +281,246 @@ stages:
       hash: md5
       md5: a75b867aa07fb33994893c15a31f767d
       size: 2760
+  train_all:
+    cmd: python -m src.train --variant all_layers
+    deps:
+    - path: data/tokenized/train.pt
+      hash: md5
+      md5: 4429e3340e5eb26f0f94d4917b472590
+      size: 2911009
+    - path: data/tokenized/val.pt
+      hash: md5
+      md5: be6b7bcc484e68b7f96f48d96dcb0924
+      size: 363029
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/data.py
+      hash: md5
+      md5: d78a3ccae087e8bcfdc3b3c945d66089
+      size: 1985
+    - path: src/runtime.py
+      hash: md5
+      md5: feb2e631b13842fc330a8dd0232f2cb2
+      size: 2300
+    - path: src/train.py
+      hash: md5
+      md5: 6540b6ce946daef59b0005a2f457d995
+      size: 11630
+    params:
+      params.yaml:
+        data.train: data/tokenized/train.pt
+        data.val: data/tokenized/val.pt
+        lora:
+          r: 8
+          alpha: 16
+          alpha_ratio: 2
+          dropout: 0.05
+          target_modules:
+          - q_proj
+          - k_proj
+          - v_proj
+          - o_proj
+          - gate_proj
+          - up_proj
+          - down_proj
+          configs:
+          - name: r=8, q_proj+v_proj
+            r: 8
+            target_modules:
+            - q_proj
+            - v_proj
+          - name: r=16, все линейные
+            r: 16
+            target_modules:
+            - q_proj
+            - k_proj
+            - v_proj
+            - o_proj
+            - gate_proj
+            - up_proj
+            - down_proj
+        model:
+          name: Qwen/Qwen3-0.6B
+          dtype: float32
+          device: auto
+          enable_thinking: false
+        train:
+          seed: 42
+          epochs: 1
+          batch_size: 2
+          grad_accum: 4
+          lr: 0.0002
+          warmup_ratio: 0.03
+          weight_decay: 0.0
+          max_grad_norm: 1.0
+          eval_every: 5
+          eval_batch_size: 2
+          val_limit: 16
+          gradient_checkpointing: true
+          max_steps: 10
+        variants:
+        - name: all_layers
+          freeze_first: 0
+        - name: freeze14
+          freeze_first: 14
+    outs:
+    - path: metrics/train_all_layers.json
+      hash: md5
+      md5: 9059a51d3f67048192d95198b62f69a5
+      size: 1267
+    - path: models/adapter_all_layers
+      hash: md5
+      md5: 566d770aead84adbea8f094d0b5acc2f.dir
+      size: 36125713
+      nfiles: 10
+  train_freeze:
+    cmd: python -m src.train --variant freeze14
+    deps:
+    - path: data/tokenized/train.pt
+      hash: md5
+      md5: 4429e3340e5eb26f0f94d4917b472590
+      size: 2911009
+    - path: data/tokenized/val.pt
+      hash: md5
+      md5: be6b7bcc484e68b7f96f48d96dcb0924
+      size: 363029
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/data.py
+      hash: md5
+      md5: d78a3ccae087e8bcfdc3b3c945d66089
+      size: 1985
+    - path: src/runtime.py
+      hash: md5
+      md5: feb2e631b13842fc330a8dd0232f2cb2
+      size: 2300
+    - path: src/train.py
+      hash: md5
+      md5: 6540b6ce946daef59b0005a2f457d995
+      size: 11630
+    params:
+      params.yaml:
+        data.train: data/tokenized/train.pt
+        data.val: data/tokenized/val.pt
+        lora:
+          r: 8
+          alpha: 16
+          alpha_ratio: 2
+          dropout: 0.05
+          target_modules:
+          - q_proj
+          - k_proj
+          - v_proj
+          - o_proj
+          - gate_proj
+          - up_proj
+          - down_proj
+          configs:
+          - name: r=8, q_proj+v_proj
+            r: 8
+            target_modules:
+            - q_proj
+            - v_proj
+          - name: r=16, все линейные
+            r: 16
+            target_modules:
+            - q_proj
+            - k_proj
+            - v_proj
+            - o_proj
+            - gate_proj
+            - up_proj
+            - down_proj
+        model:
+          name: Qwen/Qwen3-0.6B
+          dtype: float32
+          device: auto
+          enable_thinking: false
+        train:
+          seed: 42
+          epochs: 1
+          batch_size: 2
+          grad_accum: 4
+          lr: 0.0002
+          warmup_ratio: 0.03
+          weight_decay: 0.0
+          max_grad_norm: 1.0
+          eval_every: 5
+          eval_batch_size: 2
+          val_limit: 16
+          gradient_checkpointing: true
+          max_steps: 10
+        variants:
+        - name: all_layers
+          freeze_first: 0
+        - name: freeze14
+          freeze_first: 14
+    outs:
+    - path: metrics/train_freeze14.json
+      hash: md5
+      md5: cf13d7d26c3c6ad1457cdbd5b5a454e6
+      size: 1263
+    - path: models/adapter_freeze14
+      hash: md5
+      md5: ae1670f120c53fdf07839128f437ed7f.dir
+      size: 26007237
+      nfiles: 10
+  compare:
+    cmd: python -m src.compare --variant all_layers
+    deps:
+    - path: models/adapter_all_layers
+      hash: md5
+      md5: 566d770aead84adbea8f094d0b5acc2f.dir
+      size: 36125713
+      nfiles: 10
+    - path: src/compare.py
+      hash: md5
+      md5: b874231329f6f32d796caf78830c3499
+      size: 3949
+    - path: src/config.py
+      hash: md5
+      md5: d1af94455f9641952ff6c34f46ac6060
+      size: 336
+    - path: src/prompt.py
+      hash: md5
+      md5: 9ef64599ea5fb96b1c617e448f09e141
+      size: 4495
+    - path: src/runtime.py
+      hash: md5
+      md5: feb2e631b13842fc330a8dd0232f2cb2
+      size: 2300
+    params:
+      params.yaml:
+        compare:
+          max_new_tokens: 40
+          prompts:
+          - 'Команда наблюдает: поля исчезают или меняют тип без ошибки. Как понятие
+            «Валидация схемы» помогает проверить гипотезу и что сделать первым?'
+          - 'Команда наблюдает: тестовая метрика неожиданно завышена. Как понятие
+            «Контаминация сплита» помогает проверить гипотезу и что сделать первым?'
+          - 'Команда наблюдает: job не укладывается в окно. Как понятие «Batch inference»
+            помогает проверить гипотезу и что сделать первым?'
+          - 'Команда наблюдает: изменение upstream ломает обучение. Как понятие «Data
+            contract» помогает проверить гипотезу и что сделать первым?'
+          - 'Команда наблюдает: для отключения функции нужен новый релиз. Как понятие
+            «Feature flag» помогает проверить гипотезу и что сделать первым?'
+          system: 'Отвечай как ревьюер ML-платформы: кратко объясни причину, наблюдаемый
+            сигнал и безопасный следующий шаг.'
+        model:
+          name: Qwen/Qwen3-0.6B
+          dtype: float32
+          device: auto
+          enable_thinking: false
+    outs:
+    - path: docs/compare.md
+      hash: md5
+      md5: 143f98e6182f132a2dd606cd94066e11
+      size: 3960
+    - path: metrics/compare_all_layers.json
+      hash: md5
+      md5: ebafa87f308e4c53217a89591d705ecc
+      size: 2492

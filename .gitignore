@@ -10,4 +10,8 @@ params.yaml.orig
 .tmp_hw2_attachment/
 data/
 dvc_remote/
+models/
+metrics/train_*.json
+metrics/compare_*.json
+.check_*.log
 .tmp_*.py

@@ -1,4 +1,4 @@
-.PHONY: install generate bench inspect repro v1 v2 diff dag diversity contamination sample tokenize check check-hw3 check-hw2 clean
+.PHONY: install generate bench inspect repro v1 v2 diff dag diversity contamination sample tokenize train train-all train-freeze plot compare check check-hw4 check-hw3 check-hw2 clean distclean
 
 install:
 	uv sync
@@ -41,14 +41,34 @@ sample:
 tokenize:
 	uv run python -m src.tokenize_data
 
+train: train-all train-freeze plot
+
+train-all:
+	uv run python -m src.train --variant all_layers
+
+train-freeze:
+	uv run python -m src.train --variant freeze14
+
+plot:
+	uv run python -m src.plot
+
+compare:
+	uv run python -m src.compare --variant all_layers
+
 check:
-	bash tests/check.sh
+	PYTHONUTF8=1 PYTHONIOENCODING=utf-8 bash tests/check.sh
+
+check-hw4:
+	PYTHONUTF8=1 PYTHONIOENCODING=utf-8 bash tests/check_hw4.sh
 
 check-hw3:
-	bash tests/check_hw3.sh
+	PYTHONUTF8=1 PYTHONIOENCODING=utf-8 bash tests/check_hw3.sh
 
 check-hw2:
-	bash tests/check_hw2.sh
+	PYTHONUTF8=1 PYTHONIOENCODING=utf-8 bash tests/check_hw2.sh
 
 clean:
-	rm -rf data/tokenized metrics/tokenize.json docs/tokenize_report.md docs/bench.json docs/report.json out1.txt out2.txt params.yaml.bak params.yaml.orig src/__pycache__ tests/__pycache__
+	rm -rf models metrics/train_*.json metrics/compare_*.json docs/curves.png docs/compare.md .check_*.log src/__pycache__ tests/__pycache__
+
+distclean: clean
+	rm -rf .venv
